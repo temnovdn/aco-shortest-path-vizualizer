@@ -29,7 +29,7 @@ class ACOService
 		void setPheromone(const string v1, const string v2, const double pheromone);
 		
 		// ACO methods
-		vector<string> findPath(const string v1, const string v2);
+		vector<string> findPath(const string source, const string destination);
 		
 		int getAntsNumber() const;
 		
@@ -326,7 +326,7 @@ void ACOService::evaporatePheromones()
 	}
 }
 
-vector<string> ACOService::findPath(const string v1, const string v2)
+vector<string> ACOService::findPath(const string source, const string destination)
 {
 	// Initialize pheromone matrix for all edges
 	pheromoneMatrix.clear();
@@ -344,22 +344,19 @@ vector<string> ACOService::findPath(const string v1, const string v2)
 	}
 	
 	// Validate input vertices
-	if (find(vertices.begin(), vertices.end(), v1) == vertices.end())
+	if (find(vertices.begin(), vertices.end(), source) == vertices.end())
 	{
-		throw GraphExcept("Source vertex '" + v1 + "' not found in the graph");
+		throw GraphExcept("Source vertex '" + source + "' not found in the graph");
 	}
-	if (find(vertices.begin(), vertices.end(), v2) == vertices.end())
+	if (find(vertices.begin(), vertices.end(), destination) == vertices.end())
 	{
-		throw GraphExcept("Destination vertex '" + v2 + "' not found in the graph");
-	}
-	
-	if (v1 == v2)
-	{
-		return vector<string>{v1};  // Same vertex, return path with single vertex
+		throw GraphExcept("Destination vertex '" + destination + "' not found in the graph");
 	}
 	
-	string source = v1;
-	string destination = v2;
+	if (source == destination)
+	{
+		return vector<string>{source};  // Same vertex, return path with single vertex
+	}
 	
 	// Run multiple iterations to find the best path
 	vector<string> bestPath;
