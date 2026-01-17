@@ -21,6 +21,7 @@ set(HEADERS
 	graph.h
 	NodeItem.h
 	EdgeItem.h
+        ACOService.h
 )
 
 qt_add_executable(ACO
