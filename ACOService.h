@@ -30,11 +30,13 @@ class ACOService
 		
 		// Get iterations made
 		int getIterationsMade() const;
-
+		int getAntsNumber() const;
+		
 	private:
 		Graph graph;
 		PheromoneMatrix pheromoneMatrix;
 		int iterationsMade;
+		int antsNumber;
 };
 
 ACOService::ACOService(const map<string, map<string, int>>& adjacencyMatrix)
@@ -50,6 +52,8 @@ ACOService::ACOService(const map<string, map<string, int>>& adjacencyMatrix)
 			uniqueVertices.insert(col.first);
 		}
 	}
+
+	antsNumber = uniqueVertices.size();
 	
 	// Add all vertices to the graph
 	for (const string& vertex : uniqueVertices)

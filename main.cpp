@@ -3,6 +3,8 @@
 #include <cassert>
 #include <fstream>
 #include <sstream>
+#include<QApplication>
+#include"MainWindow.h"
 
 using namespace std;
 
@@ -126,8 +128,13 @@ void testACOServiceClass()
 	}
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 	testGraphClass();
 	testACOServiceClass();
+
+	QApplication a(argc, argv);
+	MainWindow w;
+	w.show();
+	return a.exec();
 }
