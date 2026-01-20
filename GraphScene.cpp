@@ -4,6 +4,35 @@
 GraphScene::GraphScene(QObject* parent) : QGraphicsScene(parent)
 {
 }
+void GraphScene::setNodeClickHandler(const std::function<void(const QString&)>& handler)
+{
+    m_nodeClickHandler = handler;//The click logic is saved to the GraphScene member variable.
+}//zhao
+
+void GraphScene::resetStyles()
+{
+    for (auto it = nodeItems.begin(); it != nodeItems.end(); ++it)
+    {
+        if (it.value()) it.value()->setColor(Qt::yellow);// if empty pass or change to yellow
+    }
+}//zhao
+
+void GraphScene::setNodeColor(const QString& nodeId, const QColor& color)
+{
+    if (!nodeItems.contains(nodeId)) 
+	return;                              //check if ondeitems have node id,OR
+    nodeItems[nodeId]->setColor(color);
+}//zhao
+
+void GraphScene::highlightPath(const std::vector<std::string>& path)
+{
+    resetStyles(); 
+      for (const auto& id : path)
+    {
+        QString qid = QString::fromStdString(id);
+        setNodeColor(qid, Qt::green); 
+    }
+}//zhao
 
 void GraphScene::drawGraph(Graph& graph)
 {
@@ -20,6 +49,7 @@ void GraphScene::drawGraph(Graph& graph)
 		);
 
 	NodeItem* node = new NodeItem(QString::fromStdString(v), pos);
+	node->setClickHandler(m_nodeClickHandler);//return bcak zhao
 	addItem(node);
 
 	nodeItems[v.c_str()] = node;

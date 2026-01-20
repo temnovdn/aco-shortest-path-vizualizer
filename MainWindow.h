@@ -9,7 +9,10 @@
 #include<QVBoxLayout>
 #include"GraphScene.h"
 #include"graph.h"
+#include "SelectionController.h"//zhao
+#include "AcoController.h"//zhao
 
+class QLabel;//zhao
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -23,7 +26,13 @@ class MainWindow : public QMainWindow
 	private:
 		GraphScene* scene;
 		QGraphicsView* view;
-
+		
+		SelectionController selector;//zhao
+        void onNodeClicked(const QString& nodeId);//zhao
+        AcoController* aco = nullptr;//zhao
+        QLabel* resultLabel = nullptr;//zhao show 
+		Graph currentGraph;  // save graph, 
+           
 		int nodeCount = 8;
 		QSpinBox* minWeightBox;
 		QSpinBox* maxWeightBox;
