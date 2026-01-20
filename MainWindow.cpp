@@ -1,6 +1,10 @@
 #include"MainWindow.h"
 #include<QRandomGenerator>
 #include<QLabel>
+#include "AcoController.h" //zhao
+#include "AcoRunner.h" //zhao
+#include <vector>   
+
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -30,6 +34,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	top->addWidget(new QLabel(" - " ));
 	top->addWidget(maxWeightBox);
 	top->addWidget(regenBtn);
+	
+	aco = new AcoController(&selector, this);//zhao run reset buttons
+    aco->addToLayout(top);//zhao
+	resultLabel = new QLabel("Total path weight: -", this);//zhao
+    top->addWidget(resultLabel);//zhao
 
 	QVBoxLayout* main = new QVBoxLayout;
 	main->addLayout(top);
@@ -40,7 +49,34 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	connect(btn8, &QPushButton::clicked, this, &MainWindow::choose8);
 	connect(btn16, &QPushButton::clicked, this, &MainWindow::choose16);
-	connect(regenBtn, &QPushButton::clicked, this, &MainWindow::regenerate);
+	connect(regenBtn, &QPushButton::clicked, this, &MainWindow::regenerate);  
+   
+   selector.setScene(scene);
+   scene->setNodeClickHandler([this](const QString& nodeId) 
+   {
+    this->onNodeClicked(nodeId);
+   });//zhao set a return when click node weill return back mw
+   
+   connect(aco, &AcoController::runRequested,this, [this](const QString& src, const QString& dst)
+   {
+    AcoRunner runner;
+    AcoResult r = runner.run(
+    currentGraph,
+    src.toStdString(),
+    dst.toStdString()
+    );
+	if (r.path.empty())
+	{  
+        scene->setNodeColor(src, Qt::blue);//even no pat color it
+        scene->setNodeColor(dst, Qt::red);
+        resultLabel->setText("Total path weight: No path found (graph direction/connectivity issue).");
+        return;
+    }
+    scene->highlightPath(r.path);
+	scene->setNodeColor(src, Qt::blue);
+    scene->setNodeColor(dst, Qt::red);//make sure no be cover
+	resultLabel->setText(QString("Total path weight: %1").arg(r.totalWeight));
+ });//zhao
 
 	regenerate();
 }
@@ -59,9 +95,19 @@ void MainWindow::choose16()
 
 void MainWindow::regenerate()
 {
-	Graph g = generateRandomGraph();
-	scene->drawGraph(g);
+	currentGraph = generateRandomGraph();   // save 
+    scene->drawGraph(currentGraph); 
+	selector.clear();
+	if (aco) aco->sync();
+	if (resultLabel) resultLabel->setText("Total path weight: -");
+    //clean the show
 }
+
+void MainWindow::onNodeClicked(const QString& nodeId)
+{
+    selector.handleNodeClicked(nodeId);
+	if (aco) aco->sync();
+}//zhao
 
 Graph MainWindow::generateRandomGraph()
 {
@@ -74,6 +120,7 @@ Graph MainWindow::generateRandomGraph()
 
 	int maxEdges = nodeCount * (nodeCount - 1)/2;
 	int edgeCount = QRandomGenerator::global()->bounded(maxEdges/3, maxEdges*2/3);
+    
 
 	for (int i = 0; i < edgeCount; i++)
 	{
@@ -92,6 +139,9 @@ Graph MainWindow::generateRandomGraph()
 		g.addEdge(QString::number(u).toStdString(), QString::number(v).toStdString(), weight);
 
 	}
-	
-	return g;
-}
+	    
+		return g;
+    }
+    
+
+

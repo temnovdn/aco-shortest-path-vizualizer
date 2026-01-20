@@ -13,6 +13,10 @@ set(SOURCES
 	graph.cpp
 	NodeItem.cpp
 	EdgeItem.cpp
+	ACOService.cpp
+	SelectionController.cpp
+	AcoController.cpp
+	AcoRunner.cpp
 )
 
 set(HEADERS
@@ -22,6 +26,9 @@ set(HEADERS
 	NodeItem.h
 	EdgeItem.h
     ACOService.h
+	SelectionController.h
+	AcoController.h
+	AcoRunner.h
 )
 
 qt_add_executable(ACO

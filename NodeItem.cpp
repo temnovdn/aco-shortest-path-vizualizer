@@ -13,8 +13,20 @@ NodeItem::NodeItem(const QString& name, const QPointF& pos, qreal radius) : m_na
 	text->setPos(pos.x()-6, pos.y()-10);
 }
 
+void NodeItem::setColor(const QColor& c)
+{
+    setBrush(QBrush(c));
+}//zhao
+
+void NodeItem::setClickHandler(const std::function<void(const QString&)>& handler)
+{
+    m_clickHandler = handler;
+}//zhao
+
 void NodeItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-	setBrush(QBrush(Qt::green));
+	if (m_clickHandler)
+    m_clickHandler(m_name);//selectcontroller controller color
+	
 	QGraphicsEllipseItem::mousePressEvent(event);
 }
